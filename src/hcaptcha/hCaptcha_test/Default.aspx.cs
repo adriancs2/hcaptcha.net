@@ -8,6 +8,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Security.Policy;
 
 namespace hCaptcha_test
 {
@@ -25,21 +27,23 @@ namespace hCaptcha_test
             string hCaptcha_token = Request.Form["h-captcha-response"];
 
             // collecting data for post request
-            var nv = new System.Collections.Specialized.NameValueCollection();
+            Dictionary<string, string> dicData = new Dictionary<string, string>();
+            dicData["secret"] = "0x0000000000000000000000000000000000000000";
+            dicData["response"] = hCaptcha_token;
 
-            // replace your secret key here:
-            nv["secret"] = "0x0000000000000000000000000000000000000000";
-            nv["response"] = hCaptcha_token;
+            // convert dictionary into form data
+            FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
-            // A tool that can performs a post request
-            WebClient wc = new WebClient();
+            HttpClient hc = new HttpClient();
 
-            // submit a post request to hcaptcha server
-            // receiving bytes of data from hcaptcha server
-            byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+            // perform post request
+            var res = hc.PostAsync("https://hcaptcha.com/siteverify", formData);
 
-            // convert the bytes into string
-            var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+            // download full request data
+            var result = res.Result.Content.ReadAsStringAsync();
+
+            // extract the content, it's json
+            var jsonstr = result.Result;
 
             StringBuilder sb = new StringBuilder();
 
@@ -74,21 +78,23 @@ namespace hCaptcha_test
             string hCaptcha_token = Request.Form["h-captcha-response"];
 
             // collecting data for post request
-            var nv = new System.Collections.Specialized.NameValueCollection();
+            Dictionary<string, string> dicData = new Dictionary<string, string>();
+            dicData["secret"] = "0x0000000000000000000000000000000000000000";
+            dicData["response"] = hCaptcha_token;
 
-            // replace your secret key here:
-            nv["secret"] = "0x0000000000000000000000000000000000000000";
-            nv["response"] = hCaptcha_token;
+            // convert dictionary into form data
+            FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
-            // A tool that can performs a post request
-            WebClient wc = new WebClient();
+            HttpClient hc = new HttpClient();
 
-            // submit a post request to hcaptcha server
-            // receiving bytes of data from hcaptcha server
-            byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+            // perform post request
+            var res = hc.PostAsync("https://hcaptcha.com/siteverify", formData);
 
-            // convert the bytes into string
-            var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+            // download full request data
+            var result = res.Result.Content.ReadAsStringAsync();
+
+            // extract the content, it's json
+            var jsonstr = result.Result;
 
             // convert JSON string into Json Element
             var jsonRootElement = JsonDocument.Parse(jsonstr).RootElement;
