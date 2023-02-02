@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Web;
+using System.Net.Http;
 
 namespace System
 {
@@ -34,13 +35,17 @@ namespace System
             Initialize(secretKey, hCaptcha_token);
         }
 
-        void Initialize(string secretKey, string hCaptcha_token)
+        public async void Initialize(string secretKey)
+        {
+            string hCaptcha_token = HttpContext.Current.Request.Form["h-captcha-response"];
+            Initialize(secretKey, hCaptcha_token);
+        }
+
+        public void Initialize(string secretKey, string hCaptcha_token)
         {
             // collecting data for post request
             var nv = new System.Collections.Specialized.NameValueCollection();
-
-            // replace your secret key here:
-            nv["secret"] = secretKey;
+            nv["secret"] = "0x0000000000000000000000000000000000000000";
             nv["response"] = hCaptcha_token;
 
             // A tool that can performs a post request
@@ -51,7 +56,7 @@ namespace System
             byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
 
             // convert the bytes into string
-            jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+            var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
 
             // convert JSON string into Class
             var jsonRootElement = System.Text.Json.JsonDocument.Parse(jsonstr).RootElement;

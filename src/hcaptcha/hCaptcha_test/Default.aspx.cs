@@ -20,7 +20,7 @@ namespace hCaptcha_test
 
         }
 
-        protected void btSubmitLazy_Click(object sender, EventArgs e)
+        protected async void btSubmitLazy_Click(object sender, EventArgs e)
         {
             // obtain the response token from user input
             // also called "response parameter" or "verification token"
@@ -34,16 +34,15 @@ namespace hCaptcha_test
             // convert dictionary into form data
             FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
+            string url = "https://hcaptcha.com/siteverify";
+
             HttpClient hc = new HttpClient();
 
             // perform post request
-            var res = hc.PostAsync("https://hcaptcha.com/siteverify", formData);
+            var res = await hc.PostAsync(url, formData);
 
-            // download full request data
-            var result = res.Result.Content.ReadAsStringAsync();
-
-            // extract the content, it's json
-            var jsonstr = result.Result;
+            // download full request data, extract content, it's json
+            var jsonstr = await res.Content.ReadAsStringAsync();
 
             StringBuilder sb = new StringBuilder();
 
@@ -71,7 +70,7 @@ namespace hCaptcha_test
             ph1.Controls.Add(new LiteralControl(sb.ToString()));
         }
 
-        protected void btSubmit_Click(object sender, EventArgs e)
+        protected async void btSubmit_Click(object sender, EventArgs e)
         {
             // obtain the response token from user input
             // also called "response parameter" or "verification token"
@@ -85,16 +84,15 @@ namespace hCaptcha_test
             // convert dictionary into form data
             FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
+            string url = "https://hcaptcha.com/siteverify";
+
             HttpClient hc = new HttpClient();
 
             // perform post request
-            var res = hc.PostAsync("https://hcaptcha.com/siteverify", formData);
+            var res = await hc.PostAsync(url, formData);
 
-            // download full request data
-            var result = res.Result.Content.ReadAsStringAsync();
-
-            // extract the content, it's json
-            var jsonstr = result.Result;
+            // download full request data, extract content, it's json
+            var jsonstr = await res.Content.ReadAsStringAsync();
 
             // convert JSON string into Json Element
             var jsonRootElement = JsonDocument.Parse(jsonstr).RootElement;
@@ -146,13 +144,15 @@ namespace hCaptcha_test
             ph1.Controls.Add(new LiteralControl(sb.ToString()));
         }
 
-        protected void btSubmitClass_Click(object sender, EventArgs e)
+        protected async void btSubmitClass_Click(object sender, EventArgs e)
         {
             // replace your secret key here:
             string secretKey = "0x0000000000000000000000000000000000000000";
 
             // create the class
-            hCaptchaResult hr = new hCaptchaResult(secretKey);
+            hCaptchaResult hr = new hCaptchaResult();
+
+            hr.Initialize(secretKey);
 
             StringBuilder sb = new StringBuilder();
 
