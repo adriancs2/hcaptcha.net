@@ -35,7 +35,7 @@ namespace System
             Initialize(secretKey, hCaptcha_token);
         }
 
-        public async void Initialize(string secretKey)
+        public void Initialize(string secretKey)
         {
             string hCaptcha_token = HttpContext.Current.Request.Form["h-captcha-response"];
             Initialize(secretKey, hCaptcha_token);
