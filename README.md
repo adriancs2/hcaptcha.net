@@ -48,26 +48,29 @@ In C#, at code behind, the POST request can be carried out by using WebClient:
 ```c#
 using System.Net;
 
-protected void btLogin_Click(object sender, EventArgs e)
+protected async void btLogin_Click(object sender, EventArgs e)
 {
-    // obtain the response token from form post
+    // obtain the response token from user input
     // also called "response parameter" or "verification token"
     string hCaptcha_token = Request.Form["h-captcha-response"];
 
-    // collecting data for post request
-    var nv = new System.Collections.Specialized.NameValueCollection();
-    nv["secret"] = "your secret key";
-    nv["response"] = hCaptcha_token;
+    // collect data for post request
+    Dictionary<string, string> dicData = new Dictionary<string, string>();
+    dicData["secret"] = "your secret key";
+    dicData["response"] = hCaptcha_token;
 
-    // A tool that can performs a post request
-    WebClient wc = new WebClient();
+    // convert dictionary into form data
+    FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
-    // submit a post request to hcaptcha server
-    // receiving bytes of data from hcaptcha server
-    byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+    string url = "https://hcaptcha.com/siteverify";
 
-    // convert the bytes into string, it's a JSON
-    var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+    HttpClient hc = new HttpClient();
+
+    // perform post request
+    var res = await hc.PostAsync(url, formData);
+
+    // download full request data, extract content, it's json
+    var jsonstr = await res.Content.ReadAsStringAsync();
 }
 ```
 hCaptcha server will return a JSON string. Here’s a typical example:
@@ -122,26 +125,29 @@ Converts the JSON string into Class:
 ```c#
 using System.Text.Json;
 
-protected void btLogin_Click(object sender, EventArgs e)
+protected async void btLogin_Click(object sender, EventArgs e)
 {
     // obtain the response token from user input
     // also called "response parameter" or "verification token"
     string hCaptcha_token = Request.Form["h-captcha-response"];
 
-    // collecting data for post request
-    var nv = new System.Collections.Specialized.NameValueCollection();
-    nv["secret"] = "your secret key";
-    nv["response"] = hCaptcha_token;
+    // collect data for post request
+    Dictionary<string, string> dicData = new Dictionary<string, string>();
+    dicData["secret"] = "your secret key";
+    dicData["response"] = hCaptcha_token;
 
-    // A tool that can performs a post request
-    WebClient wc = new WebClient();
+    // convert dictionary into form data
+    FormUrlEncodedContent formData = new FormUrlEncodedContent(dicData);
 
-    // submit a post request to hcaptcha server
-    // receiving bytes of data from hcaptcha server
-    byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+    string url = "https://hcaptcha.com/siteverify";
 
-    // convert the bytes into string
-    var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+    HttpClient hc = new HttpClient();
+
+    // perform post request
+    var res = await hc.PostAsync(url, formData);
+
+    // download full request data, extract content, it's json
+    var jsonstr = await res.Content.ReadAsStringAsync();
     
     // convert JSON string into Class
     var hcaptcha = JsonSerializer.Deserialize<hCaptchaResult>(jsonstr);
