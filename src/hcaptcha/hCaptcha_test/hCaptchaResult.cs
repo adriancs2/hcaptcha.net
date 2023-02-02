@@ -15,6 +15,11 @@ namespace System
         public List<string> error_codes { get; set; }
         public string jsonstr { get; set; }
 
+        public hCaptchaResult()
+        {
+
+        }
+
         public hCaptchaResult(string secretKey)
         {
             // obtain the response token from user input

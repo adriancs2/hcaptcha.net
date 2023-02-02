@@ -18,6 +18,55 @@ namespace hCaptcha_test
 
         }
 
+        protected void btSubmitLazy_Click(object sender, EventArgs e)
+        {
+            // obtain the response token from user input
+            // also called "response parameter" or "verification token"
+            string hCaptcha_token = Request.Form["h-captcha-response"];
+
+            // collecting data for post request
+            var nv = new System.Collections.Specialized.NameValueCollection();
+
+            // replace your secret key here:
+            nv["secret"] = "0x0000000000000000000000000000000000000000";
+            nv["response"] = hCaptcha_token;
+
+            // A tool that can performs a post request
+            WebClient wc = new WebClient();
+
+            // submit a post request to hcaptcha server
+            // receiving bytes of data from hcaptcha server
+            byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+
+            // convert the bytes into string
+            var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+
+            StringBuilder sb = new StringBuilder();
+
+            var ja = jsonstr.Split(',');
+
+            if (ja[0].Contains("true"))
+            {
+                // human
+                sb.AppendLine("Result: Success");
+                sb.AppendLine();
+            }
+            else
+            {
+                // bots
+                sb.AppendLine("Result: Failed");
+                sb.AppendLine();
+            }
+
+            sb.AppendLine();
+
+            sb.AppendLine("JSON returned from hCaptcha verification site:");
+            sb.AppendLine(jsonstr);
+
+            // display JSON on UI page
+            ph1.Controls.Add(new LiteralControl(sb.ToString()));
+        }
+
         protected void btSubmit_Click(object sender, EventArgs e)
         {
             // obtain the response token from user input
@@ -113,6 +162,68 @@ namespace hCaptcha_test
                 sb.AppendLine("Result: Failed");
                 sb.AppendLine();
             }
+
+            sb.AppendLine($"Date Time: {hr.challenge_ts}");
+            sb.AppendLine();
+
+            if (hr.error_codes != null && hr.error_codes.Count > 0)
+            {
+                sb.AppendLine("Error Codes:");
+
+                foreach (var er in hr.error_codes)
+                {
+                    sb.AppendLine(er);
+                }
+            }
+
+            sb.AppendLine();
+
+            sb.AppendLine("JSON returned from hCaptcha verification site:");
+            sb.AppendLine(hr.jsonstr);
+
+            // display JSON on UI page
+            ph1.Controls.Add(new LiteralControl(sb.ToString()));
+        }
+
+        protected void btSubmitClass2_Click(object sender, EventArgs e)
+        {
+            // obtain the response token from user input
+            // also called "response parameter" or "verification token"
+            string hCaptcha_token = Request.Form["h-captcha-response"];
+
+            // collecting data for post request
+            var nv = new System.Collections.Specialized.NameValueCollection();
+            nv["secret"] = "0x0000000000000000000000000000000000000000";
+            nv["response"] = hCaptcha_token;
+
+            // A tool that can performs a post request
+            WebClient wc = new WebClient();
+
+            // submit a post request to hcaptcha server
+            // receiving bytes of data from hcaptcha server
+            byte[] ba = wc.UploadValues("https://hcaptcha.com/siteverify", nv);
+
+            // convert the bytes into string
+            var jsonstr = System.Text.Encoding.UTF8.GetString(ba);
+
+            // convert JSON string into Class
+            var hr = JsonSerializer.Deserialize<hCaptchaResult>(jsonstr);
+
+            StringBuilder sb = new StringBuilder();
+
+            if (hr.success)
+            {
+                // human
+                sb.AppendLine("Result: Success");
+                sb.AppendLine();
+            }
+            else
+            {
+                // bots
+                sb.AppendLine("Result: Failed");
+                sb.AppendLine();
+            }
+
 
             sb.AppendLine($"Date Time: {hr.challenge_ts}");
             sb.AppendLine();
