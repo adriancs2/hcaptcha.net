@@ -1,5 +1,7 @@
 # Using hCaptcha in ASP.NET Web Forms
 
+Blob Post: https://adriancs.com/c-sharp/927/using-hcaptcha-in-asp-net-web-forms/
+
 First of all, register an account at hCaptcha, then obtain the following values:
 
 - Site Key (you can create multiple site keys)
