@@ -1,4 +1,4 @@
-# Using hCaptcha in ASP.NET Web Forms
+# Using hCaptcha in C# / ASP.NET Web Forms
 
 Blog Post: https://adriancs.com/c-sharp/927/using-hcaptcha-in-asp-net-web-forms/
 
